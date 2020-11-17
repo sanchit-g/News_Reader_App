@@ -26,17 +26,21 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
 
     Context context;
     List<Articles> articles;
+    private final NewsItemClicked listener;
 
-    public Adapter(Context context, List<Articles> articles) {
+    public Adapter(Context context, List<Articles> articles, NewsItemClicked listener) {
         this.context = context;
         this.articles = articles;
+        this.listener = listener;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.items, parent, false);
-        return new ViewHolder(view);
+        ViewHolder viewHolder = new ViewHolder(view);
+        view.setOnClickListener(v -> listener.onItemClicked(articles.get(viewHolder.getAdapterPosition())));
+        return viewHolder;
     }
 
     @Override
@@ -58,7 +62,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         return articles.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView tvTitle, tvSource, tvDate;
         ImageView imageView;
@@ -87,4 +91,8 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         }
         return time;
     }
+}
+
+interface NewsItemClicked {
+    void onItemClicked(Articles item);
 }

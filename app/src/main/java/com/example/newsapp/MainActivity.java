@@ -1,9 +1,11 @@
 package com.example.newsapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -18,7 +20,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NewsItemClicked {
 
     RecyclerView recyclerView;
     final String API_KEY = "feb510c6f5c04eb790c6ba39c3be7854";
@@ -45,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
                 if(response.isSuccessful() && response.body() != null) {
                     articlesList.clear();
                     articlesList = response.body().getArticles();
-                    adapter = new Adapter(MainActivity.this, articlesList);
+                    adapter = new Adapter(MainActivity.this, articlesList, MainActivity.this);
                     recyclerView.setAdapter(adapter);
                 }
             }
@@ -60,5 +62,13 @@ public class MainActivity extends AppCompatActivity {
     public String getCountry() {
         Locale locale = new Locale("en", "IN");
         return locale.getCountry().toLowerCase();
+    }
+
+
+    @Override
+    public void onItemClicked(Articles item) {
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        CustomTabsIntent customTabsIntent = builder.build();
+        customTabsIntent.launchUrl(this, Uri.parse(item.getUrl()));
     }
 }
